@@ -1,5 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import NotFoundPage from '@/pages/NotFoundPage.jsx'
+import SplashPage from '../pages/SplashPage'
+import DashboardPage from "../pages/DashboardPage"
 
 /**
  * router/index.jsx — Central route registry
@@ -21,7 +23,11 @@ import NotFoundPage from '@/pages/NotFoundPage.jsx'
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <div className="p-8 text-center bg-neutral-100 text-primary-600">🚀 Library App — Router Ready</div>,
+    element: <SplashPage/>,
+  },
+  {
+    path: 'dashboard',
+    element: <DashboardPage/>,
   },
   {
     path: '*',
