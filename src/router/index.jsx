@@ -2,6 +2,8 @@ import { createBrowserRouter } from 'react-router-dom'
 import NotFoundPage from '@/pages/NotFoundPage.jsx'
 import SplashPage from '../pages/SplashPage'
 import DashboardPage from "../pages/DashboardPage"
+import LoginPage from '../pages/LoginPage'
+import RegisterPage from '../pages/RegisterPage'
 
 /**
  * router/index.jsx — Central route registry
@@ -21,9 +23,18 @@ import DashboardPage from "../pages/DashboardPage"
  *  /admin/*       → requires login + admin role
  */
 export const router = createBrowserRouter([
+  // AUTH
   {
     path: '/',
     element: <SplashPage/>,
+  },
+  {
+    path : "auth/login",
+    element : <LoginPage/>
+  },
+  {
+    path : "auth/register",
+    element : <RegisterPage/>
   },
   {
     path: 'dashboard',

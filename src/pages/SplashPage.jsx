@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+  import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSplash from '@/hooks/useSplash.js';
 import Logo from '@/assets/images/Logo.png';
@@ -10,8 +10,7 @@ export default function SplashPage() {
   useEffect(() => {
     // When the splash timer finishes, navigate to the dashboard
     if (!isSplashLoading) {
-      navigate('/dashboard', { replace: true });
-    }
+      navigate('/auth/login', { replace: true }); }
   }, [isSplashLoading, navigate]);
 
   return (

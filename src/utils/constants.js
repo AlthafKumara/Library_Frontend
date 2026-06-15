@@ -33,7 +33,8 @@ export const API_BASE_URL =
 
 // Route paths — use these instead of hardcoding strings in <Link to="...">
 export const ROUTES = {
-  HOME: '/',
+  SPLASH : "/onboarding",
+  HOME: '/dashboard',
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
   COMPLETE_PROFILE: '/auth/complete-profile',
