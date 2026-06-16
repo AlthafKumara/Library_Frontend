@@ -9,11 +9,14 @@ import { parseResponse } from '../utils/parseResponse'
  * @returns {Promise<object>}
  */
 export async function getProfile() {
-    try {
+  try {
     const response = await api.get('/profile/')
-  return parseResponse(ProfileSchema, response.data.data)      
-    } catch (error) {
-        return error;
-    }
-  
+    return parseResponse(ProfileSchema, response.data.data)
+  } catch (error) {
+    const message =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      'Gagal memuat profil.'
+    throw new Error(message, { cause: error })
+  }
 }

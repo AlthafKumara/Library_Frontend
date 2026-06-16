@@ -4,6 +4,9 @@ import SplashPage from '../pages/SplashPage'
 import DashboardPage from "../pages/DashboardPage"
 import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
+import ProtectedRoute from './ProtectedRoute'
+import UnauthorizedPage from '../pages/UnauthorizedPage'
+import AdminDashboardPage from '../pages/AdminDashboardPage'
 
 /**
  * router/index.jsx — Central route registry
@@ -23,25 +26,53 @@ import RegisterPage from '../pages/RegisterPage'
  *  /admin/*       → requires login + admin role
  */
 export const router = createBrowserRouter([
-  // AUTH
+  // AUTH (Bebas Akses)
   {
     path: '/',
-    element: <SplashPage/>,
+    element: <SplashPage />,
   },
   {
-    path : "auth/login",
-    element : <LoginPage/>
+    path: "auth/login",
+    element: <LoginPage />
+
   },
   {
-    path : "auth/register",
-    element : <RegisterPage/>
+    path: "auth/register",
+    element: <RegisterPage />
   },
+
+  // NEED LOGIN INFO
   {
-    path: 'dashboard',
-    element: <DashboardPage/>,
+    element: <ProtectedRoute />,
+    children : [
+      {
+        path: 'dashboard',
+        element: <DashboardPage />,
+      },
+      
+    ]
   },
+
   {
-    path: '*',
-    element: <NotFoundPage />,
+    element : <ProtectedRoute requireAdmin={true}/>,
+    children: [
+      {
+        path : "admin/dashboard",
+        element : <AdminDashboardPage/>
+      }
+    ]
   },
+
+  // UNDEFINED & UNAUTORIZED ROUTE
+  {
+        path: '*',
+        element: <NotFoundPage />,
+      },
+  {
+        path: 'unauthorized',
+        element: <UnauthorizedPage />,
+      },
+
+  
+
 ])

@@ -1,15 +1,15 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../store/authStore'
-import { useProfileStore } from '../store/profileStore'
-import { login, register, logout } from '../services/authService'
-import { getProfile } from '../services/profileService'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import { useProfileStore } from "../store/profileStore";
+import { login, register, logout } from "../services/authService";
+import { getProfile } from "../services/profileService";
 import {
   validateEmail,
   validatePassword,
   validatePasswordMatch,
-} from '../utils/validators'
-import { ROUTES } from '../utils/constants'
+} from "../utils/validators";
+import { ROUTES } from "../utils/constants";
 
 /**
  * hooks/useAuth.js — All auth actions + form state in one place.
@@ -21,146 +21,145 @@ import { ROUTES } from '../utils/constants'
  *   isAuthenticated, user — read from authStore
  */
 export function useAuth() {
-  const navigate = useNavigate()
-  const { setAuth, clearAuth, isAuthenticated, userId } = useAuthStore()
+  const navigate = useNavigate();
+  const { setAuth, clearAuth, isAuthenticated, userId } = useAuthStore();
 
   // ─── Login ────────────────────────────────────────────────────────
-  const [loginFields, setLoginFields] = useState({ email: '', password: '' })
-  const [loginErrors, setLoginErrors] = useState({})
-  const [loginLoading, setLoginLoading] = useState(false)
-  const [loginServerError, setLoginServerError] = useState('')
+  const [loginFields, setLoginFields] = useState({ email: "", password: "" });
+  const [loginErrors, setLoginErrors] = useState({});
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginServerError, setLoginServerError] = useState("");
 
   function onLoginChange(e) {
-    const { name, value } = e.target
-    setLoginFields((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setLoginFields((prev) => ({ ...prev, [name]: value }));
     // Clear field error on change
-    setLoginErrors((prev) => ({ ...prev, [name]: '' }))
-    setLoginServerError('')
+    setLoginErrors((prev) => ({ ...prev, [name]: "" }));
+    setLoginServerError("");
   }
 
   async function handleLogin(e) {
-    e.preventDefault()
+    e.preventDefault();
 
     // Client-side validation
-    const emailCheck = validateEmail(loginFields.email)
-    const passwordCheck = validatePassword(loginFields.password)
+    const emailCheck = validateEmail(loginFields.email);
+    const passwordCheck = validatePassword(loginFields.password);
 
-    const errors = {}
-    if (!emailCheck.valid) errors.email = emailCheck.message
-    if (!passwordCheck.valid) errors.password = passwordCheck.message
+    const errors = {};
+    if (!emailCheck.valid) errors.email = emailCheck.message;
+    if (!passwordCheck.valid) errors.password = passwordCheck.message;
 
     if (Object.keys(errors).length > 0) {
-      setLoginErrors(errors)
-      return
+      setLoginErrors(errors);
+      return;
     }
 
-    setLoginLoading(true)
-    setLoginServerError('')
+    setLoginLoading(true);
+    setLoginServerError("");
 
     try {
       const { accessToken, userId } = await login({
         email: loginFields.email.trim(),
         password: loginFields.password,
-      })
-      setAuth(userId, accessToken)
+      });
+      setAuth(userId, accessToken);
 
       try {
-        const profile = await getProfile()
-        useProfileStore.getState().setProfile(profile)
+        const profile = await getProfile();
+        useProfileStore.getState().setProfile(profile);
       } catch {
         // Silent fail — login tetap lanjut, profile store kosong
       }
 
-      navigate(ROUTES.HOME)
+      const { isAdmin } = useProfileStore.getState();
+
+      if (isAdmin) {
+        navigate(ROUTES.ADMIN_DASHBOARD);
+      } else {
+        navigate(ROUTES.HOME);
+      }
     } catch (err) {
-      const message =
-        err.message === 'SERVER_SHAPE_MISMATCH'
-          ? 'Unexpected response from server. Please try again.'
-          : err?.response?.data?.message || 'Login gagal. Periksa kembali data Anda.'
-      setLoginServerError(message)
+      // err.message is already the backend-extracted message from authService
+      setLoginServerError(err.message || 'Login gagal. Periksa kembali data Anda.')
     } finally {
-      setLoginLoading(false)
+      setLoginLoading(false);
     }
   }
 
   // ─── Register ─────────────────────────────────────────────────────
   const [registerFields, setRegisterFields] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-  })
-  const [registerErrors, setRegisterErrors] = useState({})
-  const [registerLoading, setRegisterLoading] = useState(false)
-  const [registerServerError, setRegisterServerError] = useState('')
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [registerErrors, setRegisterErrors] = useState({});
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerServerError, setRegisterServerError] = useState("");
 
   function onRegisterChange(e) {
-    const { name, value } = e.target
-    setRegisterFields((prev) => ({ ...prev, [name]: value }))
-    setRegisterErrors((prev) => ({ ...prev, [name]: '' }))
-    setRegisterServerError('')
+    const { name, value } = e.target;
+    setRegisterFields((prev) => ({ ...prev, [name]: value }));
+    setRegisterErrors((prev) => ({ ...prev, [name]: "" }));
+    setRegisterServerError("");
   }
 
   async function handleRegister(e) {
-    e.preventDefault()
+    e.preventDefault();
 
     // Client-side validation
-    const emailCheck = validateEmail(registerFields.email)
-    const passwordCheck = validatePassword(registerFields.password)
+    const emailCheck = validateEmail(registerFields.email);
+    const passwordCheck = validatePassword(registerFields.password);
     const matchCheck = validatePasswordMatch(
       registerFields.password,
       registerFields.confirmPassword,
-    )
+    );
 
-    const errors = {}
-    if (!emailCheck.valid) errors.email = emailCheck.message
-    if (!passwordCheck.valid) errors.password = passwordCheck.message
-    if (!matchCheck.valid) errors.confirmPassword = matchCheck.message
+    const errors = {};
+    if (!emailCheck.valid) errors.email = emailCheck.message;
+    if (!passwordCheck.valid) errors.password = passwordCheck.message;
+    if (!matchCheck.valid) errors.confirmPassword = matchCheck.message;
 
     if (Object.keys(errors).length > 0) {
-      setRegisterErrors(errors)
-      return
+      setRegisterErrors(errors);
+      return;
     }
 
-    setRegisterLoading(true)
-    setRegisterServerError('')
+    setRegisterLoading(true);
+    setRegisterServerError("");
 
     try {
       const { accessToken, userId } = await register({
         email: registerFields.email.trim(),
         password: registerFields.password,
         confirmPassword: registerFields.confirmPassword,
-      })
-      setAuth(userId, accessToken)
+      });
+      setAuth(userId, accessToken);
 
       try {
-        const profile = await getProfile()
-        useProfileStore.getState().setProfile(profile)
+        const profile = await getProfile();
+        useProfileStore.getState().setProfile(profile);
       } catch {
         // Silent fail — register tetap lanjut, profile store kosong
       }
-
-      navigate(ROUTES.HOME)
+      navigate(ROUTES.COMPLETE_PROFILE);
     } catch (err) {
-      const message =
-        err.message === 'SERVER_SHAPE_MISMATCH'
-          ? 'Unexpected response from server. Please try again.'
-          : err?.response?.data?.message || 'Registrasi gagal. Coba lagi.'
-      setRegisterServerError(message)
+      // err.message is already the backend-extracted message from authService
+      setRegisterServerError(err.message || 'Registrasi gagal. Coba lagi.')
     } finally {
-      setRegisterLoading(false)
+      setRegisterLoading(false);
     }
   }
 
   // ─── Logout ───────────────────────────────────────────────────────
   async function handleLogout() {
     try {
-      await logout()
+      await logout();
     } catch {
       // Even if the API call fails, clear client state
     } finally {
-      clearAuth()
-      useProfileStore.getState().clearProfile()
-      navigate(ROUTES.LOGIN)
+      clearAuth();
+      useProfileStore.getState().clearProfile();
+      navigate(ROUTES.LOGIN);
     }
   }
 
@@ -185,5 +184,5 @@ export function useAuth() {
     handleLogout,
     isAuthenticated,
     userId,
-  }
+  };
 }

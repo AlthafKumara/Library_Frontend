@@ -4,19 +4,12 @@ import { Input } from '../components/ui/Input'
 import { PasswordInput } from '../components/ui/PasswordInput'
 import { Button } from '../components/ui/Button'
 import Logo from '../assets/images/Logo.png'
-import { Link } from 'react-router-dom'
+import {  Link } from 'react-router-dom'
 import { ROUTES } from '../utils/constants'
 import { useAuth } from '../hooks/useAuth'
 
 export default function LoginPage() {
-  const {
-    loginFields,
-    loginErrors,
-    loginLoading,
-    loginServerError,
-    onLoginChange,
-    handleLogin,
-  } = useAuth()
+  
 
   return (
     <div className="flex min-h-dvh w-full bg-neutral-200 text-neutral-900">
@@ -64,57 +57,7 @@ export default function LoginPage() {
 
           {/* Form Card */}
           <div className="rounded-4xl border border-neutral-300 bg-white p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] sm:p-10">
-            <form className="flex flex-col gap-6" onSubmit={handleLogin} noValidate>
-
-              {/* Server-level error banner */}
-              {loginServerError && (
-                <div className="rounded-xl border border-danger-500/30 bg-danger-500/10 px-4 py-3 text-sm text-danger-600">
-                  {loginServerError}
-                </div>
-              )}
-
-              {/* Email */}
-              <div className="relative">
-                <Input
-                  label="Email Address"
-                  type="email"
-                  name="email"
-                  placeholder="name@example.com"
-                  value={loginFields.email}
-                  onChange={onLoginChange}
-                  error={loginErrors.email}
-                  className="pl-11"
-                  autoComplete="email"
-                />
-                <EnvelopeSimple
-                  size={20}
-                  className="absolute left-4 top-9.5 text-neutral-400 pointer-events-none"
-                  weight="regular"
-                />
-              </div>
-
-              {/* Password */}
-              <PasswordInput
-                label="Password"
-                name="password"
-                placeholder="••••••••"
-                value={loginFields.password}
-                onChange={onLoginChange}
-                error={loginErrors.password}
-                autoComplete="current-password"
-              />
-
-              <div className="pt-2">
-                <Button
-                  variant="primary"
-                  type="submit"
-                  className="w-full text-base font-medium"
-                  disabled={loginLoading}
-                >
-                  {loginLoading ? 'Logging in…' : 'Login'}
-                </Button>
-              </div>
-            </form>
+            <FormLogin/>
 
             {/* Footer links */}
             <div className="mt-8 flex flex-col items-center gap-3 text-sm">
@@ -143,4 +86,67 @@ export default function LoginPage() {
 
     </div>
   )
+}
+
+function FormLogin() {
+  const {
+    loginFields,
+    loginErrors,
+    loginLoading,
+    loginServerError,
+    onLoginChange,
+    handleLogin,
+  } = useAuth()
+
+  return (<form className="flex flex-col gap-6" onSubmit={handleLogin} noValidate>
+
+    {/* Server-level error banner */}
+    {loginServerError && (
+      <div className="rounded-xl border border-danger-500/30 bg-danger-500/10 px-4 py-3 text-sm text-danger-600">
+        {loginServerError}
+      </div>
+    )}
+
+    {/* Email */}
+    <div className="relative">
+      <Input
+        label="Email Address"
+        type="email"
+        name="email"
+        placeholder="name@example.com"
+        value={loginFields.email}
+        onChange={onLoginChange}
+        error={loginErrors.email}
+        className="pl-11"
+        autoComplete="email"
+      />
+      <EnvelopeSimple
+        size={20}
+        className="absolute left-4 top-9.5 text-neutral-400 pointer-events-none"
+        weight="regular"
+      />
+    </div>
+
+    {/* Password */}
+    <PasswordInput
+      label="Password"
+      name="password"
+      placeholder="••••••••"
+      value={loginFields.password}
+      onChange={onLoginChange}
+      error={loginErrors.password}
+      autoComplete="current-password"
+    />
+
+    <div className="pt-2">
+      <Button
+        variant="primary"
+        type="submit"
+        className="w-full text-base font-medium"
+        disabled={loginLoading}
+      >
+        {loginLoading ? 'Logging in…' : 'Login'}
+      </Button>
+    </div>
+  </form>);
 }

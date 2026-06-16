@@ -8,14 +8,14 @@ import { useAuth } from '../hooks/useAuth'
  * `profile.name` is available after profile completion;
  * falls back to the email prefix until then.
  */
-export default function DashboardPage() {
+export default function AdminDashboardPage() {
   const profile = useProfileStore()
   const { handleLogout } = useAuth();
 
   
   const displayName = profile?.name
     || profile?.email?.split('@')[0]
-    || 'Guest'
+    || 'admin'
 
   const role = profile?.role || "Role undefined"
 
@@ -28,7 +28,7 @@ export default function DashboardPage() {
         Hello, {role} {displayName}!
       </h1>
       <p className="text-neutral-500 text-lg text-center max-w-md">
-        Your library dashboard is ready. Start exploring books, track your borrows, and connect with the community.
+        Your library dashboard is ready. Start manage books, track your borrows transaction
       </p>
       <button
         onClick={handleLogout}

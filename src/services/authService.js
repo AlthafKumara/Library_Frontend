@@ -17,8 +17,17 @@ import { parseResponse } from '../utils/parseResponse'
  * @returns {Promise<{ accessToken: string, user: object }>}
  */
 export async function login({ email, password }) {
-  const response = await api.post('/auth/login', { email, password })
-  return parseResponse(AuthResponseSchema, response.data.data)
+  try {
+    const response = await api.post('/auth/login', { email, password })
+    return parseResponse(AuthResponseSchema, response.data.data)
+  } catch (error) {
+    // Extract the backend error message and re-throw a normalised error
+    const message =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      'Login gagal. Periksa kembali data Anda.'
+    throw new Error(message, { cause: error })
+  }
 }
 
 /**
@@ -27,12 +36,20 @@ export async function login({ email, password }) {
  * @returns {Promise<{ accessToken: string, user: object }>}
  */
 export async function register({ email, password, confirmPassword }) {
-  const response = await api.post('/auth/register', {
-    email,
-    password,
-    confirmPassword,
-  })
-  return parseResponse(AuthResponseSchema, response.data.data)
+  try {
+    const response = await api.post('/auth/register', {
+      email,
+      password,
+      confirmPassword,
+    })
+    return parseResponse(AuthResponseSchema, response.data.data)
+  } catch (error) {
+    const message =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      'Registrasi gagal. Coba lagi.'
+    throw new Error(message, { cause: error })
+  }
 }
 
 /**
@@ -40,5 +57,14 @@ export async function register({ email, password, confirmPassword }) {
  * The backend clears the HTTP-only refresh token cookie.
  */
 export async function logout() {
-  await api.post('/auth/logout')
+  try {
+    await api.post('/auth/logout')
+  } catch (error) {
+    // Logout failure is non-critical — let the caller decide how to handle it
+    const message =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      'Logout gagal.'
+    throw new Error(message, { cause: error })
+  }
 }
