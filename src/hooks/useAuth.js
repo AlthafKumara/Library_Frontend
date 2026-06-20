@@ -162,12 +162,13 @@ export function useAuth() {
     try {
       await logout();
       useToastStore.getState().addToast("Logged out successfully", "success");
+    } catch {
+      useToastStore.getState().addToast("Session cleared. Please log in again.", "error");
+    } finally {
       clearAuth();
       useProfileStore.getState().clearProfile();
       navigate(ROUTES.LOGIN);
-    } catch {
-      useToastStore.getState().addToast("Logout Error, Try Again later", "error");
-    } 
+    }
   }
 
   return {
