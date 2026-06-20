@@ -17,6 +17,10 @@
   }
 }
 
+.a{
+  text-decoration: none !important;
+}
+
 .hero {
   position: relative;
 

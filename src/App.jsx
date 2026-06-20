@@ -1,5 +1,6 @@
 import { RouterProvider } from 'react-router-dom'
 import { router } from '@/router/index.jsx'
+import ToastContainer from './components/ui/Toast'
 
 /**
  * App.jsx — Root component
@@ -7,7 +8,12 @@ import { router } from '@/router/index.jsx'
  * Global providers (QueryClient, etc.) are set up in main.jsx above this.
  */
 function App() {
-  return <RouterProvider router={router} />
+  return (
+    <>
+      <RouterProvider router={router} />
+      <ToastContainer />
+    </>
+  )
 }
 
 export default App

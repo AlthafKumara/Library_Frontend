@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useProfileStore } from "../store/profileStore";
+import { useToastStore } from "../store/toastStore";
 import { login, register, logout } from "../services/authService";
 import { getProfile } from "../services/profileService";
 import {
@@ -71,6 +72,8 @@ export function useAuth() {
         // Silent fail — login tetap lanjut, profile store kosong
       }
 
+      useToastStore.getState().addToast("Successfully logged in!", "success");
+
       const { isAdmin } = useProfileStore.getState();
 
       if (isAdmin) {
@@ -79,8 +82,9 @@ export function useAuth() {
         navigate(ROUTES.HOME);
       }
     } catch (err) {
-      // err.message is already the backend-extracted message from authService
-      setLoginServerError(err.message || 'Login gagal. Periksa kembali data Anda.')
+      const msg = err.message || 'Login failed. Please check your credentials.';
+      setLoginServerError(msg);
+      useToastStore.getState().addToast(msg, "error");
     } finally {
       setLoginLoading(false);
     }
@@ -141,10 +145,13 @@ export function useAuth() {
       } catch {
         // Silent fail — register tetap lanjut, profile store kosong
       }
+      
+      useToastStore.getState().addToast("Registration successful!", "success");
       navigate(ROUTES.COMPLETE_PROFILE);
     } catch (err) {
-      // err.message is already the backend-extracted message from authService
-      setRegisterServerError(err.message || 'Registrasi gagal. Coba lagi.')
+      const msg = err.message || 'Registration failed. Please try again.';
+      setRegisterServerError(msg);
+      useToastStore.getState().addToast(msg, "error");
     } finally {
       setRegisterLoading(false);
     }
@@ -154,13 +161,13 @@ export function useAuth() {
   async function handleLogout() {
     try {
       await logout();
-    } catch {
-      // Even if the API call fails, clear client state
-    } finally {
+      useToastStore.getState().addToast("Logged out successfully", "success");
       clearAuth();
       useProfileStore.getState().clearProfile();
       navigate(ROUTES.LOGIN);
-    }
+    } catch {
+      useToastStore.getState().addToast("Logout Error, Try Again later", "error");
+    } 
   }
 
   return {
