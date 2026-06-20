@@ -16,7 +16,7 @@ import { useAuthStore } from '@/store/authStore.js'
  *   4. If refresh also fails → clears auth state (user is logged out)
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   withCredentials: true, // Required: sends HTTP-only refresh token cookie
   headers: {
     'Content-Type': 'application/json',
@@ -55,7 +55,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip token-refresh logic for auth endpoints — a 401 there means
+    // wrong credentials, not an expired token. Let the error pass through
+    // so the caller (useAuth) can display the backend message to the user.
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/')
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       if (isRefreshing) {
         // Queue requests that come in while we're already refreshing
         return new Promise((resolve, reject) => {
@@ -76,7 +81,7 @@ api.interceptors.response.use(
         const response = await api.post('/auth/refresh-token')
         const { accessToken, user } = response.data.data
 
-        useAuthStore.getState().setAuth(user, accessToken)
+        useAuthStore.getState().setAuth(user?.userId || user?.id, accessToken)
         processQueue(null, accessToken)
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`
@@ -84,6 +89,10 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null)
         useAuthStore.getState().clearAuth()
+        // clear profile when refresh token fails
+        import('@/store/profileStore.js').then((module) => {
+          module.useProfileStore.getState().clearProfile()
+        })
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false

@@ -2,6 +2,11 @@ import { createBrowserRouter } from 'react-router-dom'
 import NotFoundPage from '@/pages/NotFoundPage.jsx'
 import SplashPage from '../pages/SplashPage'
 import DashboardPage from "../pages/DashboardPage"
+import LoginPage from '../pages/LoginPage'
+import RegisterPage from '../pages/RegisterPage'
+import ProtectedRoute from './ProtectedRoute'
+import UnauthorizedPage from '../pages/UnauthorizedPage'
+import AdminDashboardPage from '../pages/AdminDashboardPage'
 
 /**
  * router/index.jsx — Central route registry
@@ -21,16 +26,53 @@ import DashboardPage from "../pages/DashboardPage"
  *  /admin/*       → requires login + admin role
  */
 export const router = createBrowserRouter([
+  // AUTH (Bebas Akses)
   {
     path: '/',
-    element: <SplashPage/>,
+    element: <SplashPage />,
   },
   {
-    path: 'dashboard',
-    element: <DashboardPage/>,
+    path: "auth/login",
+    element: <LoginPage />
+
   },
   {
-    path: '*',
-    element: <NotFoundPage />,
+    path: "auth/register",
+    element: <RegisterPage />
   },
+
+  // NEED LOGIN INFO
+  {
+    element: <ProtectedRoute />,
+    children : [
+      {
+        path: 'dashboard',
+        element: <DashboardPage />,
+      },
+      
+    ]
+  },
+
+  {
+    element : <ProtectedRoute requireAdmin={true}/>,
+    children: [
+      {
+        path : "admin/dashboard",
+        element : <AdminDashboardPage/>
+      }
+    ]
+  },
+
+  // UNDEFINED & UNAUTORIZED ROUTE
+  {
+        path: '*',
+        element: <NotFoundPage />,
+      },
+  {
+        path: 'unauthorized',
+        element: <UnauthorizedPage />,
+      },
+
+  
+
 ])

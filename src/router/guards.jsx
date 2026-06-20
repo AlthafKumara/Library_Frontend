@@ -8,6 +8,7 @@
  * source of truth for who is currently logged in.
  */
 import { useAuthStore } from '@/store/authStore.js'
+import { useProfileStore } from '@/store/profileStore.js'
 
 /**
  * Check if the current user is authenticated.
@@ -22,5 +23,5 @@ export function isAuthenticated() {
  * @returns {boolean}
  */
 export function isAdmin() {
-  return useAuthStore.getState().isAdmin
+  return useProfileStore.getState().isAdmin
 }

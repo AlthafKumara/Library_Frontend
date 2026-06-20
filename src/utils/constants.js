@@ -33,7 +33,8 @@ export const API_BASE_URL =
 
 // Route paths — use these instead of hardcoding strings in <Link to="...">
 export const ROUTES = {
-  HOME: '/',
+  SPLASH : "/",
+  HOME: '/dashboard',
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
   COMPLETE_PROFILE: '/auth/complete-profile',
@@ -45,6 +46,7 @@ export const ROUTES = {
   MESSAGE_DETAIL: (id) => `/community/${id}`,
   SAVED_LISTS: '/saved-lists',
   PROFILE: '/profile',
+  ADMIN_DASHBOARD : "/admin/dashboard",
   ADMIN_BOOKS: '/admin/books',
   ADMIN_CATEGORIES: '/admin/categories',
   ADMIN_BORROWS: '/admin/borrows',
