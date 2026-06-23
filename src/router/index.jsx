@@ -7,6 +7,7 @@ import RegisterPage from '../pages/RegisterPage'
 import ProtectedRoute from './ProtectedRoute'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
 import AdminDashboardPage from '../pages/AdminDashboardPage'
+import CompleteProfilePage from '../pages/CompleteProfilePage'
 
 /**
  * router/index.jsx — Central route registry
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children : [
+      {
+        path: 'auth/complete-profile',
+        element: <CompleteProfilePage />,
+      },
       {
         path: 'dashboard',
         element: <DashboardPage />,

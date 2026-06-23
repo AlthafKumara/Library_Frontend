@@ -1,18 +1,23 @@
 import { ZodError } from 'zod'
 
 /**
- * Runs schema.parse() and re-throws a clean Error on failure.
- * Use this in every service function instead of calling schema.parse() directly.
+ * Parses the full API envelope: { data, message, statusCode }.
+ * Validates only the `data` field against the given schema.
  *
- * @param {import('zod').ZodSchema} schema
- * @param {unknown} data  — the raw response payload
+ * @param {import('zod').ZodSchema} schema  — schema for response.data.data
+ * @param {object} responseData             — raw response.data ({ data, message, statusCode })
+ * @returns {{ data: T, message: string, statusCode: number }}
  */
-export function parseResponse(schema, data) {
+export default function parseApiResponse(schema, responseData) {
   try {
-    return schema.parse(data)
+    const parsed = schema ? schema.parse(responseData?.data ?? {}) : responseData?.data;
+    return {
+      data: parsed ?? null,
+      message: responseData?.message ?? null,
+      statusCode: responseData?.statusCode ?? null,
+    }
   } catch (err) {
     if (err instanceof ZodError) {
-      // Log details for debugging, expose nothing sensitive to the UI
       console.error('[API Response Validation Failed]', err.issues)
       throw new Error('SERVER_SHAPE_MISMATCH', { cause: err })
     }

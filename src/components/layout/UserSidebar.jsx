@@ -28,7 +28,7 @@ export default function UserSidebar({ isMobileOpen, setIsMobileOpen }) {
         ========================================================================
       */}
       <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-neutral-200 sticky top-0 z-40">
-        
+
         {/* Left: Logo & Navigation */}
         <div className="flex items-center gap-12">
           {/* Logo */}
@@ -40,7 +40,7 @@ export default function UserSidebar({ isMobileOpen, setIsMobileOpen }) {
           </div>
 
           {/* Desktop Nav */}
-          <nav className="flex items-center gap-8">
+          {displayName !== "Guest" && (<nav className="flex items-center gap-8">
             <a href="#" className="flex items-center gap-2 text-primary-600 font-medium no-underline">
               <House size={15} weight="duotone" />
               <span>Home</span>
@@ -53,7 +53,8 @@ export default function UserSidebar({ isMobileOpen, setIsMobileOpen }) {
               <ArrowsLeftRight size={15} />
               <span>Transaction</span>
             </a>
-          </nav>
+          </nav>)}
+
         </div>
 
         {/* Right: Profile Dropdown */}
@@ -111,7 +112,7 @@ export default function UserSidebar({ isMobileOpen, setIsMobileOpen }) {
       */}
       {/* Overlay */}
       {isMobileOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
@@ -126,7 +127,7 @@ export default function UserSidebar({ isMobileOpen, setIsMobileOpen }) {
         `}
       >
         <div className="flex items-center justify-end p-4 border-b border-neutral-200">
-          <button 
+          <button
             onClick={() => setIsMobileOpen(false)}
             className="p-2 text-neutral-500 hover:bg-neutral-100 rounded-lg active:scale-95 transition-colors"
           >
@@ -148,7 +149,7 @@ export default function UserSidebar({ isMobileOpen, setIsMobileOpen }) {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+        {displayName !== "Guest" && (<div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
           <nav className="px-4 space-y-2">
             <a href="#" className="flex items-center gap-4 p-4 rounded-2xl text-primary-600 bg-primary-50 transition-colors font-medium active:scale-[0.98] no-underline">
               <House size={24} weight="duotone" />
@@ -163,10 +164,10 @@ export default function UserSidebar({ isMobileOpen, setIsMobileOpen }) {
               <span>Transaction</span>
             </a>
           </nav>
-        </div>
+        </div>)}
 
         {/* Mobile Logout */}
-        <div className="p-6 border-t border-neutral-200 bg-neutral-100/50">
+        <div className="p-6 border-t border-neutral-200 bg-neutral-100/50 ">
           <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-3 p-3 rounded-xl text-danger-600 hover:bg-danger-50 transition-colors font-medium active:scale-[0.98] group"

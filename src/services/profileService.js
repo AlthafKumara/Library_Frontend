@@ -1,6 +1,7 @@
 import api from './api'
 import { ProfileSchema } from '../models/profile'
-import { parseResponse } from '../utils/parseResponse'
+import parseApiResponse from '../utils/parseResponse'
+import errorHandling from '../utils/errorHandling'
 
 /**
  * Fetch the authenticated user's profile.
@@ -10,13 +11,15 @@ import { parseResponse } from '../utils/parseResponse'
  */
 export async function getProfile() {
   try {
-    const response = await api.get('/profile/')
-    return parseResponse(ProfileSchema, response.data.data)
+    const response = await api.get('/profile/', {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    })
+    return parseApiResponse(ProfileSchema, response.data)
   } catch (error) {
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      'Gagal memuat profil.'
-    throw new Error(message, { cause: error })
+    throw errorHandling(error, "Error When Get Profile Data")
   }
 }

@@ -31,7 +31,7 @@ export const PAGINATION = {
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'
 
-// Route paths — use these instead of hardcoding strings in <Link to="...">
+// ======================  ROUTES CONSTANT ===========================
 export const ROUTES = {
   SPLASH : "/",
   HOME: '/dashboard',
@@ -50,4 +50,5 @@ export const ROUTES = {
   ADMIN_BOOKS: '/admin/books',
   ADMIN_CATEGORIES: '/admin/categories',
   ADMIN_BORROWS: '/admin/borrows',
+  UNAUTHORIZED : "/unauthorized"
 }

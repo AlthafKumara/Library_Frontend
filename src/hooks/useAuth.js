@@ -59,30 +59,38 @@ export function useAuth() {
     setLoginServerError("");
 
     try {
-      const { accessToken, userId } = await login({
+      const {
+        message,
+        data: { accessToken, userId },
+      } = await login({
         email: loginFields.email.trim(),
         password: loginFields.password,
       });
       setAuth(userId, accessToken);
 
       try {
-        const profile = await getProfile();
+        const { statusCode, data: profile } = await getProfile();
         useProfileStore.getState().setProfile(profile);
-      } catch {
-        // Silent fail — login tetap lanjut, profile store kosong
-      }
 
-      useToastStore.getState().addToast("Successfully logged in!", "success");
+        if (statusCode === "404") {
+          navigate(ROUTES.COMPLETE_PROFILE);
+          return;
+        }
+      } catch {
+        // silent Fail
+      }
+      useToastStore
+        .getState()
+        .addToast(message ?? "Successfully logged in!", "success");
 
       const { isAdmin } = useProfileStore.getState();
-
       if (isAdmin) {
         navigate(ROUTES.ADMIN_DASHBOARD);
       } else {
         navigate(ROUTES.HOME);
       }
     } catch (err) {
-      const msg = err.message || 'Login failed. Please check your credentials.';
+      const msg = err.message || "Login failed. Please check your credentials.";
       setLoginServerError(msg);
       useToastStore.getState().addToast(msg, "error");
     } finally {
@@ -132,24 +140,17 @@ export function useAuth() {
     setRegisterServerError("");
 
     try {
-      const { accessToken, userId } = await register({
+      const { data: { accessToken, userId } } = await register({
         email: registerFields.email.trim(),
         password: registerFields.password,
         confirmPassword: registerFields.confirmPassword,
       });
       setAuth(userId, accessToken);
 
-      try {
-        const profile = await getProfile();
-        useProfileStore.getState().setProfile(profile);
-      } catch {
-        // Silent fail — register tetap lanjut, profile store kosong
-      }
-      
       useToastStore.getState().addToast("Registration successful!", "success");
       navigate(ROUTES.COMPLETE_PROFILE);
     } catch (err) {
-      const msg = err.message || 'Registration failed. Please try again.';
+      const msg = err.message || "Registration failed. Please try again.";
       setRegisterServerError(msg);
       useToastStore.getState().addToast(msg, "error");
     } finally {
@@ -160,13 +161,19 @@ export function useAuth() {
   // ─── Logout ───────────────────────────────────────────────────────
   async function handleLogout() {
     try {
-      await logout();
-      useToastStore.getState().addToast("Logged out successfully", "success");
-    } catch {
-      useToastStore.getState().addToast("Session cleared. Please log in again.", "error");
+      const { message } = await logout();
+      useToastStore
+        .getState()
+        .addToast(message ?? "Logged out successfully", "success");
+    } catch(err) {
+      const msg = err.message;
+      useToastStore
+        .getState()
+        .addToast(msg ?? "Session cleared. Please log in again.", "error");
     } finally {
       clearAuth();
       useProfileStore.getState().clearProfile();
+      localStorage.clear()
       navigate(ROUTES.LOGIN);
     }
   }

@@ -15,7 +15,7 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-neutral-50">
+    <div className="min-h-dvh flex flex-col bg-neutral-50">
       <UserSidebar isMobileOpen={sidebarOpen} setIsMobileOpen={setSidebarOpen} />
       <MobileHeader onClick={() => setSidebarOpen(true)} />
       <MainContent />

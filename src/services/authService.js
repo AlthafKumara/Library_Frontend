@@ -1,6 +1,8 @@
 import api from './api'
 import { AuthResponseSchema } from '../models/auth'
-import { parseResponse } from '../utils/parseResponse'
+import parseApiResponse from "../utils/parseResponse"
+import errorHandling from '../utils/errorHandling'
+
 /**
  * services/authService.js — All API calls for authentication
  *
@@ -19,14 +21,9 @@ import { parseResponse } from '../utils/parseResponse'
 export async function login({ email, password }) {
   try {
     const response = await api.post('/auth/login', { email, password })
-    return parseResponse(AuthResponseSchema, response.data.data)
+    return parseApiResponse(AuthResponseSchema, response.data)
   } catch (error) {
-    // Extract the backend error message and re-throw a normalised error
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      'Login gagal. Periksa kembali data Anda.'
-    throw new Error(message, { cause: error })
+    throw errorHandling(error, "Login Gagal, Silahkan Coba Lagi")
   }
 }
 
@@ -42,13 +39,9 @@ export async function register({ email, password, confirmPassword }) {
       password,
       confirmPassword,
     })
-    return parseResponse(AuthResponseSchema, response.data.data)
+    return parseApiResponse(AuthResponseSchema, response.data)
   } catch (error) {
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      'Registrasi gagal. Coba lagi.'
-    throw new Error(message, { cause: error })
+    throw errorHandling(error, "Registrasi Gagal, Silahkan Coba Lagi")
   }
 }
 
@@ -58,13 +51,11 @@ export async function register({ email, password, confirmPassword }) {
  */
 export async function logout() {
   try {
-    await api.post('/auth/logout')
+    const response =  await api.post('/auth/logout')
+    return parseApiResponse(null, response.data)
+    
+    
   } catch (error) {
-    // Logout failure is non-critical — let the caller decide how to handle it
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      'Logout gagal.'
-    throw new Error(message, { cause: error })
+    throw errorHandling(error, "Logout Gagal, Silahkan Coba Lagi nanti")
   }
 }
