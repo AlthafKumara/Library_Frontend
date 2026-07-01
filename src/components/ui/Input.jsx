@@ -22,6 +22,7 @@ export const Input = React.forwardRef(({
   error,
   helperText,
   id: externalId,
+  required,
   ...props
 }, ref) => {
   const internalId = useId();
@@ -35,6 +36,7 @@ export const Input = React.forwardRef(({
           className="text-sm font-medium text-neutral-900 leading-none"
         >
           {label}
+          {required && <span className="text-danger-500 ml-1">*</span>}
         </label>
       )}
 
